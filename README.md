@@ -216,7 +216,7 @@ ALTER TABLE cost_info
         REFERENCES sector (sector_id, warehouse_id);
 ```
 
-##🧠 아쉬웠던 점
+## 🧠 아쉬웠던 점
 - 팀원의 능력을 미리 확인해보지 않았다는 것
 - 2차 프로젝트와 연결하는 부분에서 더 깊게 생각했어야 할 듯 하다.
 - ppt 발표를 대본을 보고 한 점
