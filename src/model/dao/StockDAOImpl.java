@@ -13,19 +13,15 @@ import java.util.List;
 import java.util.Optional;
 
 public class StockDAOImpl implements StockDAO {
-    Connection conn = null;
-    PreparedStatement pstmt = null;
 
     // 회원 아이디에 따른 재고 내역 확인 메서드
     @Override
     public List<StockDTO> checkUserStock(String user_id) {
         List<StockDTO> checkStockList = new ArrayList<>();
-        ResultSet rs = null;
-        try {
-            conn = DbUtil.getConnection();
-            pstmt = conn.prepareStatement("SELECT * FROM stock WHERE user_id = ?");
+        try (Connection conn = DbUtil.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement("SELECT * FROM stock WHERE user_id = ?");
+             ResultSet rs = pstmt.executeQuery();) {
             pstmt.setString(1, user_id);
-            rs = pstmt.executeQuery();
 
             while (rs.next()) {
                 StockDTO stock = StockDTO.builder()
@@ -43,14 +39,6 @@ public class StockDAOImpl implements StockDAO {
 
         } catch (Exception e) {
             e.printStackTrace();
-        } finally {
-            try {
-                if (rs != null) rs.close();
-                if (pstmt != null) pstmt.close();
-                if (conn != null) conn.close();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
         }
         return checkStockList;
     }
@@ -59,15 +47,15 @@ public class StockDAOImpl implements StockDAO {
     @Override
     public List<StockDTO> checkAdminUserStock(String admin_id) {
         List<StockDTO> checkStockList = new ArrayList<>();
-        ResultSet rs = null;
-        try {
-            conn = DbUtil.getConnection();
-            pstmt = conn.prepareStatement("SELECT stock_num,count, total_price, stock.user_id, product_id, sector_id, stock.warehouse_id FROM stock\n" +
-                    "    JOIN user ON user.user_id = stock.user_id\n" +
-                    "    JOIN admin ON user.admin_id = admin.admin_id\n" +
-                    "WHERE stock.user_id = user.user_id AND user.admin_id = ?");
+        try (
+                Connection conn = DbUtil.getConnection();
+                PreparedStatement pstmt = conn.prepareStatement("SELECT stock_num,count, total_price, stock.user_id, product_id, sector_id, stock.warehouse_id FROM stock\n" +
+                        "    JOIN user ON user.user_id = stock.user_id\n" +
+                        "    JOIN admin ON user.admin_id = admin.admin_id\n" +
+                        "WHERE stock.user_id = user.user_id AND user.admin_id = ?");
+                ResultSet rs = pstmt.executeQuery();) {
+
             pstmt.setString(1, admin_id);
-            rs = pstmt.executeQuery();
 
             while (rs.next()) {
                 StockDTO stock = StockDTO.builder()
@@ -85,14 +73,6 @@ public class StockDAOImpl implements StockDAO {
 
         } catch (Exception e) {
             e.printStackTrace();
-        } finally {
-            try {
-                if (rs != null) rs.close();
-                if (pstmt != null) pstmt.close();
-                if (conn != null) conn.close();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
         }
         return checkStockList;
     }
@@ -100,16 +80,15 @@ public class StockDAOImpl implements StockDAO {
     @Override
     public List<StockDTO> checkGeneralStock(String admin_id) {
         List<StockDTO> checkStockList = new ArrayList<>();
-        ResultSet rs = null;
-        try {
-            conn = DbUtil.getConnection();
-            pstmt = conn.prepareStatement("SELECT stock_num,count, total_price, stock.user_id, product_id, sector_id, stock.warehouse_id\n" +
-                    "FROM stock\n" +
-                    "JOIN warehouse ON stock.warehouse_id = warehouse.warehouse_id\n" +
-                    "JOIN admin ON admin.admin_id = ?\n" +
-                    "WHERE warehouse.warehouse_id = admin.warehouse_id");
+        try (Connection conn = DbUtil.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement("SELECT stock_num,count, total_price, stock.user_id, product_id, sector_id, stock.warehouse_id\n" +
+                     "FROM stock\n" +
+                     "JOIN warehouse ON stock.warehouse_id = warehouse.warehouse_id\n" +
+                     "JOIN admin ON admin.admin_id = ?\n" +
+                     "WHERE warehouse.warehouse_id = admin.warehouse_id");
+             ResultSet rs = pstmt.executeQuery();
+        ) {
             pstmt.setString(1, admin_id);
-            rs = pstmt.executeQuery();
 
             while (rs.next()) {
                 StockDTO stock = StockDTO.builder()
@@ -127,14 +106,6 @@ public class StockDAOImpl implements StockDAO {
 
         } catch (Exception e) {
             e.printStackTrace();
-        } finally {
-            try {
-                if (rs != null) rs.close();
-                if (pstmt != null) pstmt.close();
-                if (conn != null) conn.close();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
         }
         return checkStockList;
     }
@@ -142,17 +113,15 @@ public class StockDAOImpl implements StockDAO {
     @Override
     public List<StockHistoryDTO> checkGeneralStockHistory(String admin_id) {
         List<StockHistoryDTO> checkStockList = new ArrayList<>();
-        ResultSet rs = null;
-        try {
-            conn = DbUtil.getConnection();
-            pstmt = conn.prepareStatement("SELECT history_num, product_id, stock_history.sector_id, count, change_date, change_type, stock_history.admin_id, incoming_num, outgoing_num, stock_num\n" +
-                    "FROM stock_history\n" +
-                    "         JOIN sector ON stock_history.sector_id = sector.sector_id\n" +
-                    "         JOIN warehouse ON warehouse.warehouse_id = sector.warehouse_id\n" +
-                    "         JOIN admin ON admin.admin_id = ?\n" +
-                    "WHERE warehouse.warehouse_id = admin.warehouse_id");
+        try (Connection conn = DbUtil.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement("SELECT history_num, product_id, stock_history.sector_id, count, change_date, change_type, stock_history.admin_id, incoming_num, outgoing_num, stock_num\n" +
+                     "FROM stock_history\n" +
+                     "         JOIN sector ON stock_history.sector_id = sector.sector_id\n" +
+                     "         JOIN warehouse ON warehouse.warehouse_id = sector.warehouse_id\n" +
+                     "         JOIN admin ON admin.admin_id = ?\n" +
+                     "WHERE warehouse.warehouse_id = admin.warehouse_id");
+             ResultSet rs = pstmt.executeQuery();) {
             pstmt.setString(1, admin_id);
-            rs = pstmt.executeQuery();
 
             while (rs.next()) {
                 StockHistoryDTO stockHistory = StockHistoryDTO.builder()
@@ -173,14 +142,6 @@ public class StockDAOImpl implements StockDAO {
 
         } catch (Exception e) {
             e.printStackTrace();
-        } finally {
-            try {
-                if (rs != null) rs.close();
-                if (pstmt != null) pstmt.close();
-                if (conn != null) conn.close();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
         }
         return checkStockList;
     }
@@ -188,14 +149,12 @@ public class StockDAOImpl implements StockDAO {
     @Override
     public List<StockHistoryDTO> checkAdminStockHistory(String admin_id) {
         List<StockHistoryDTO> checkStockList = new ArrayList<>();
-        ResultSet rs = null;
-        try {
-            conn = DbUtil.getConnection();
-            pstmt = conn.prepareStatement("SELECT history_num, product_id, stock_history.sector_id, count, change_date, change_type, stock_history.admin_id, incoming_num, outgoing_num, stock_num\n" +
-                    "FROM stock_history\n" +
-                    "JOIN admin ON admin.admin_id = ?");
+        try (Connection conn = DbUtil.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement("SELECT history_num, product_id, stock_history.sector_id, count, change_date, change_type, stock_history.admin_id, incoming_num, outgoing_num, stock_num\n" +
+                     "FROM stock_history\n" +
+                     "JOIN admin ON admin.admin_id = ?");
+             ResultSet rs = pstmt.executeQuery();) {
             pstmt.setString(1, admin_id);
-            rs = pstmt.executeQuery();
 
             while (rs.next()) {
                 StockHistoryDTO stockHistory = StockHistoryDTO.builder()
@@ -216,17 +175,7 @@ public class StockDAOImpl implements StockDAO {
 
         } catch (Exception e) {
             e.printStackTrace();
-        } finally {
-            try {
-                if (rs != null) rs.close();
-                if (pstmt != null) pstmt.close();
-                if (conn != null) conn.close();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
         }
         return checkStockList;
     }
-
-
 }
