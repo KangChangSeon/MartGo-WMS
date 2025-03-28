@@ -7,25 +7,31 @@ import model.dto.StockHistoryDTO;
 
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class StockServiceImpl implements StockService {
     private StockDAO stockDAO = new StockDAOImpl();
 
+    @Override
     public List<StockDTO> getUserStock(String user_id) {
-        List<StockDTO> resultUserStock = stockDAO.checkUserStock(user_id);
-        return resultUserStock;
+        return stockDAO.checkUserStock(user_id).stream()
+                .filter(stock -> stock.getCount() > 0)
+                .collect(Collectors.toList());
     }
+
 
     @Override
     public List<StockDTO> getAdminUserStock(String admin_id) {
-        List<StockDTO> resultAdminUserStock = stockDAO.checkAdminUserStock(admin_id);
-        return resultAdminUserStock;
+        return stockDAO.checkAdminUserStock(admin_id).stream()
+                .filter(stock -> stock.getCount() > 0)
+                .collect(Collectors.toList());
     }
 
     @Override
     public List<StockDTO> getGeneralStock(String admin_id) {
-        List<StockDTO> resultGeneralStock = stockDAO.checkGeneralStock(admin_id);
-        return resultGeneralStock;
+        return stockDAO.checkGeneralStock(admin_id).stream()
+                .filter(stock -> stock.getCount() > 0)
+                .collect(Collectors.toList());
     }
 
     @Override

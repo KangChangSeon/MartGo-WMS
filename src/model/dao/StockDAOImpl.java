@@ -19,10 +19,9 @@ public class StockDAOImpl implements StockDAO {
     public List<StockDTO> checkUserStock(String user_id) {
         List<StockDTO> checkStockList = new ArrayList<>();
         try (Connection conn = DbUtil.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement("SELECT * FROM stock WHERE user_id = ?");
-             ResultSet rs = pstmt.executeQuery();) {
+             PreparedStatement pstmt = conn.prepareStatement("SELECT * FROM stock WHERE user_id = ?");) {
             pstmt.setString(1, user_id);
-
+            ResultSet rs = pstmt.executeQuery();
             while (rs.next()) {
                 StockDTO stock = StockDTO.builder()
                         .stock_num(rs.getInt("stock_num"))
@@ -52,11 +51,10 @@ public class StockDAOImpl implements StockDAO {
                 PreparedStatement pstmt = conn.prepareStatement("SELECT stock_num,count, total_price, stock.user_id, product_id, sector_id, stock.warehouse_id FROM stock\n" +
                         "    JOIN user ON user.user_id = stock.user_id\n" +
                         "    JOIN admin ON user.admin_id = admin.admin_id\n" +
-                        "WHERE stock.user_id = user.user_id AND user.admin_id = ?");
-                ResultSet rs = pstmt.executeQuery();) {
+                        "WHERE stock.user_id = user.user_id AND user.admin_id = ?");) {
 
             pstmt.setString(1, admin_id);
-
+            ResultSet rs = pstmt.executeQuery();
             while (rs.next()) {
                 StockDTO stock = StockDTO.builder()
                         .stock_num(rs.getInt("stock_num"))
@@ -86,10 +84,9 @@ public class StockDAOImpl implements StockDAO {
                      "JOIN warehouse ON stock.warehouse_id = warehouse.warehouse_id\n" +
                      "JOIN admin ON admin.admin_id = ?\n" +
                      "WHERE warehouse.warehouse_id = admin.warehouse_id");
-             ResultSet rs = pstmt.executeQuery();
         ) {
             pstmt.setString(1, admin_id);
-
+            ResultSet rs = pstmt.executeQuery();
             while (rs.next()) {
                 StockDTO stock = StockDTO.builder()
                         .stock_num(rs.getInt("stock_num"))
@@ -119,10 +116,9 @@ public class StockDAOImpl implements StockDAO {
                      "         JOIN sector ON stock_history.sector_id = sector.sector_id\n" +
                      "         JOIN warehouse ON warehouse.warehouse_id = sector.warehouse_id\n" +
                      "         JOIN admin ON admin.admin_id = ?\n" +
-                     "WHERE warehouse.warehouse_id = admin.warehouse_id");
-             ResultSet rs = pstmt.executeQuery();) {
+                     "WHERE warehouse.warehouse_id = admin.warehouse_id");) {
             pstmt.setString(1, admin_id);
-
+            ResultSet rs = pstmt.executeQuery();
             while (rs.next()) {
                 StockHistoryDTO stockHistory = StockHistoryDTO.builder()
                         .history_num(rs.getInt("history_num"))
@@ -152,10 +148,9 @@ public class StockDAOImpl implements StockDAO {
         try (Connection conn = DbUtil.getConnection();
              PreparedStatement pstmt = conn.prepareStatement("SELECT history_num, product_id, stock_history.sector_id, count, change_date, change_type, stock_history.admin_id, incoming_num, outgoing_num, stock_num\n" +
                      "FROM stock_history\n" +
-                     "JOIN admin ON admin.admin_id = ?");
-             ResultSet rs = pstmt.executeQuery();) {
+                     "JOIN admin ON admin.admin_id = ?");) {
             pstmt.setString(1, admin_id);
-
+            ResultSet rs = pstmt.executeQuery();
             while (rs.next()) {
                 StockHistoryDTO stockHistory = StockHistoryDTO.builder()
                         .history_num(rs.getInt("history_num"))
